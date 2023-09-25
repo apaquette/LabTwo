@@ -4,29 +4,39 @@
 #include <iostream>
 
 /*! displays the first function in the barrier being executed */
-void task(std::shared_ptr<Semaphore> mutexSem,std::shared_ptr<Semaphore> barrierSem, int threadCount){
+void task(std::shared_ptr<Semaphore> mutexSem,std::shared_ptr<Semaphore> barrierSem, std::shared_ptr<int> threadCount){
 
-  std::cout << "first " << std::endl;
+  std::cout << "first\n";
   //put barrier code here
+  mutexSem->Wait();
+  *threadCount -= 1; //this is not shared, needs to be shared (use shared pointer?)
+  mutexSem->Signal();
   
-  std::cout << "second" << std::endl;
+  if(*threadCount == 1) barrierSem->Signal();
+  barrierSem->Wait();
+
+  std::cout << "second\n";
+  barrierSem->Signal();
 }
-
-
 
 
 int main(void){
   std::shared_ptr<Semaphore> mutexSem;
   std::shared_ptr<Semaphore> barrierSem;
+  std::shared_ptr<int> sharedCount;
+
   int threadCount = 5;
+  
   mutexSem=std::make_shared<Semaphore>(1);
   barrierSem=std::make_shared<Semaphore>(0);
+  sharedCount=std::make_shared<int>(threadCount);
+
   /*!< An array of threads*/
   std::vector<std::thread> threadArray(threadCount);
   /*!< Pointer to barrier object*/
 
   for(int i=0; i < threadArray.size(); i++){
-    threadArray[i]=std::thread(task,mutexSem,barrierSem,threadCount);
+    threadArray[i]=std::thread(task,mutexSem,barrierSem,sharedCount);
   }
 
   for(int i = 0; i < threadArray.size(); i++){

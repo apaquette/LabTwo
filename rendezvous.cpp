@@ -5,17 +5,26 @@
 
 /*! displays the first function in the barrier being executed */
 void task(std::shared_ptr<Semaphore> mutexSem,std::shared_ptr<Semaphore> barrierSem, std::shared_ptr<int> threadCount){
-
   std::cout << "first\n";
   mutexSem->Wait();
-  *threadCount -= 1;
-  mutexSem->Signal();
+  --(*threadCount);
   
-  if(*threadCount == 0) barrierSem->Signal();
-  barrierSem->Wait();
+  
+  if(*threadCount == 0) {
+    mutexSem->Signal();
+    barrierSem->Signal();//1 signal
+  }else{
+    mutexSem->Signal();
+    barrierSem->Wait(); //N-1 waits
+  }
 
   std::cout << "second\n";
-  barrierSem->Signal();
+  mutexSem->Wait();
+  ++(*threadCount);
+  
+
+  if(*threadCount < 4) barrierSem->Signal();//N-2 signals
+  mutexSem->Signal();
 }
 
 

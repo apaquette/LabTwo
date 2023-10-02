@@ -9,22 +9,13 @@ void task(std::shared_ptr<Semaphore> mutexSem,std::shared_ptr<Semaphore> barrier
   mutexSem->Wait();
   --(*threadCount);
   
-  
   if(*threadCount == 0) {
-    mutexSem->Signal();
-    barrierSem->Signal();//1 signal
-  }else{
-    mutexSem->Signal();
-    barrierSem->Wait(); //N-1 waits
+    barrierSem->Signal();
   }
-
-  std::cout << "second\n";
-  mutexSem->Wait();
-  ++(*threadCount);
-  
-
-  if(*threadCount < 4) barrierSem->Signal();//N-2 signals
   mutexSem->Signal();
+  barrierSem->Wait();
+  barrierSem->Signal();
+  std::cout << "second\n";
 }
 
 

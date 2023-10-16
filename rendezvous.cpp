@@ -7,12 +7,11 @@
 void task(std::shared_ptr<Semaphore> mutexSem,std::shared_ptr<Semaphore> barrierSem, std::shared_ptr<int> threadCount){
   std::cout << "first\n";
   mutexSem->Wait();
-  --(*threadCount);
-  
-  if(*threadCount == 0) {
+  if(--*threadCount == 0) {
     barrierSem->Signal();
   }
   mutexSem->Signal();
+
   barrierSem->Wait();
   barrierSem->Signal();
   std::cout << "second\n";

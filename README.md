@@ -1,4 +1,4 @@
-### Lab One
+### Lab Two
 Second lab for Concurrency Programming demonstrating the use of Barriers with C++. 
 
 ### Date Created
